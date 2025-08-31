@@ -3,35 +3,36 @@ package org.example;
 import com.opencsv.bean.CsvBindByName;
 
 public class ProcessBean {
-	@CsvBindByName(column = "process_name", required = true)
-	private String name;
+	@CsvBindByName(column = "process", required = true)
+	private int id;
 	@CsvBindByName(column = "burst_time", required = true)
-	private int originalBurstTime;
+	private double burstTime;
+	@CsvBindByName(column = "burst_time", required = true)
+	private double remainingBurstTime;
 	@CsvBindByName
 	private int priority;
-	private int remainingBurstTime;
 
-	public String getName() {
-		return name;
+	public int getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public int getOriginalBurstTime() {
-		return originalBurstTime;
+	public double getBurstTime() {
+		return burstTime;
 	}
 
-	public void setOriginalBurstTime(int originalBurstTime) {
-		this.originalBurstTime = originalBurstTime;
+	public void setBurstTime(double burstTime) {
+		this.burstTime = burstTime;
 	}
 
-	public int getRemainingBurstTime() {
+	public double getRemainingBurstTime() {
 		return remainingBurstTime;
 	}
 
-	public void setRemainingBurstTime(int remainingBurstTime) {
+	public void setRemainingBurstTime(double remainingBurstTime) {
 		this.remainingBurstTime = remainingBurstTime;
 	}
 
