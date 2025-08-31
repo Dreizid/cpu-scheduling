@@ -17,6 +17,16 @@ public class App {
 
 	}
 
+	public List<ProcessSplit> roundRobinWithPriority(Map<Integer, List<ProcessBean>> processList) {
+		double timeQuantum = 2.5;
+		List<ProcessSplit> processSplits = new ArrayList<>();
+		processList.forEach((k, v) -> {
+			processSplits.addAll(roundRobin(v, timeQuantum,
+					(processSplits.isEmpty()) ? 0 : processSplits.get(processSplits.size() - 1).getEndTime()));
+		});
+		return processSplits;
+	}
+
 	public List<ProcessSplit> roundRobin(List<ProcessBean> processList, double timeQuantum, double prevTime) {
 		Queue<ProcessBean> queue = new LinkedList<ProcessBean>(processList);
 		List<ProcessSplit> processSplits = new ArrayList<>();
