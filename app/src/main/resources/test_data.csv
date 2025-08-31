@@ -1,4 +1,4 @@
-process, burst_time, priority
+process,burst_time,priority
 1,4,3
 2,5,2
 3,8,2
