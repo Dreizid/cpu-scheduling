@@ -1,6 +1,7 @@
 package org.example;
 
 import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +16,17 @@ public class CsvReader {
 		} catch (IOException | CsvException e) {
 			e.printStackTrace();
 
+			return null;
+		}
+	}
+
+	public static List<ProcessBean> getProcessBeans(String filePath) {
+		try {
+			List<ProcessBean> beans = new CsvToBeanBuilder<ProcessBean>(new FileReader(filePath)).withType(ProcessBean.class)
+					.build().parse();
+			return beans;
+		} catch (Exception e) {
+			System.out.println(e);
 			return null;
 		}
 	}
