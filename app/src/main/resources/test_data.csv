@@ -1,7 +1,6 @@
 process_name, burst_time, priority
-p_1, 4, 3
-p_2, 5, 2
-p_3, 8, 2
-p_4, 7, 1
-p_5, 3, 3
-
+p_1,4,3
+p_2,5,2
+p_3,8,2
+p_4,7,1
+p_5,3,3
