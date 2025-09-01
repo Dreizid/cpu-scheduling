@@ -2,15 +2,30 @@ package org.example;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import de.vandermeer.asciitable.AsciiTable;
 
-public class App {
+public class RRP {
+	private static URL resource = RRP.class.getClassLoader().getResource("test_data_2.csv");
+
 	public static void main(String[] args) {
+		AsciiTable at = new AsciiTable();
+		List<String[]> csvContent = CsvReader.readCsv(resource.getPath());
+		// at.getContext().setGrid(A7_Grids.minusBarPlusEquals());
+		for (String[] line : csvContent) {
+			at.addRule();
+			at.addRow(line);
+		}
+		at.addRule();
+		String rend = at.render();
+		System.out.println(rend);
+		Map<Integer, List<ProcessBean>> processList = RRP.getProcessByPriority();
+		RRP test = new RRP();
+		List<ProcessSplit> list = test.roundRobinWithPriority(processList);
 	}
 
 	public void generateGantt() {
@@ -53,7 +68,6 @@ public class App {
 
 	public static Map<Integer, List<ProcessBean>> getProcessByPriority() {
 		Map<Integer, List<ProcessBean>> processList = new HashMap<>();
-		URL resource = App.class.getClassLoader().getResource("test_data_2.csv");
 		List<ProcessBean> csv = CsvReader.getProcessBeans(resource.getPath());
 		for (ProcessBean process : csv) {
 			int priority = process.getPriority();
