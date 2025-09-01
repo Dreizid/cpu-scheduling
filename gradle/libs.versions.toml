@@ -5,8 +5,10 @@
 guava = "33.4.6-jre"
 junit = "4.13.2"
 opencsv = "5.12.0"
+asciitable = "0.3.2"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { module = "junit:junit", version.ref = "junit" }
 opencsv = { module = "com.opencsv:opencsv", version.ref = "opencsv"}
+asciitable = { module = "de.vandermeer:asciitable", version.ref = "asciitable" }

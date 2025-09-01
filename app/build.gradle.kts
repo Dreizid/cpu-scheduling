@@ -24,6 +24,9 @@ dependencies {
 
 		// https://mvnrepository.com/artifact/com.opencsv/opencsv
 		implementation(libs.opencsv)
+
+		// https://github.com/vdmeer/asciitable
+		implementation(libs.asciitable)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
