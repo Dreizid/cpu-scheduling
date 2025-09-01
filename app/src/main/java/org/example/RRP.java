@@ -11,6 +11,7 @@ import de.vandermeer.asciitable.AsciiTable;
 
 public class RRP {
 	private static URL resource = RRP.class.getClassLoader().getResource("test_data_2.csv");
+	private double timeQuantum = 2.5;
 
 	public static void main(String[] args) {
 		AsciiTable at = new AsciiTable();
@@ -26,14 +27,20 @@ public class RRP {
 		Map<Integer, List<ProcessBean>> processList = RRP.getProcessByPriority();
 		RRP test = new RRP();
 		List<ProcessSplit> list = test.roundRobinWithPriority(processList);
+		for (ProcessSplit proc : list) {
+			System.out.println("Process: " + proc.getProcessId());
+			System.out.println("Start: " + proc.getStartTime());
+			System.out.print("End: " + proc.getEndTime());
+			System.out.println();
+		}
+		test.generateGantt(list);
 	}
 
-	public void generateGantt() {
-
+	public void generateGantt(List<ProcessSplit> list) {
+		GanttGenerator.renderGantt(list, timeQuantum);
 	}
 
 	public List<ProcessSplit> roundRobinWithPriority(Map<Integer, List<ProcessBean>> processList) {
-		double timeQuantum = 2.5;
 		List<ProcessSplit> processSplits = new ArrayList<>();
 		processList.forEach((k, v) -> {
 			processSplits.addAll(roundRobin(v, timeQuantum,
