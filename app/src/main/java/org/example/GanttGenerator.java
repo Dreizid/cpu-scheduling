@@ -26,7 +26,7 @@ public class GanttGenerator {
 		charts.add(new HashMap<String, String>(chartTemplate));
 
 		int scale = 5;
-		int columns = 100;
+		int columns = 40;
 		int rows = 12;
 
 		double finalTurnAroundTime = 0;
@@ -37,7 +37,7 @@ public class GanttGenerator {
 					(int) (Math.round((processSplit.getEndTime() - processSplit.getStartTime()) * scale)));
 
 			int lastIndex = charts.size() - 1;
-			if (charts.get(lastIndex).get("top").length() + width + 1 > columns) {
+			if (charts.get(lastIndex).get("top").length() - 1 + width + 1 > columns) {
 				charts.get(lastIndex).put("top",
 						charts.get(lastIndex).get("top").substring(0, charts.get(lastIndex).get("top").length() - 1)
 								+ Character.toString(TOP_RIGHT));
@@ -46,6 +46,7 @@ public class GanttGenerator {
 								+ Character.toString(BOTTOM_RIGHT));
 
 				charts.add(new HashMap<String, String>(chartTemplate));
+				lastIndex++;
 			}
 
 			charts.get(lastIndex).put("top",
