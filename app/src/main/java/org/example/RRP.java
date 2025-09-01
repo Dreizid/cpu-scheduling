@@ -10,7 +10,7 @@ import java.util.Queue;
 import de.vandermeer.asciitable.AsciiTable;
 
 public class RRP {
-	private static URL resource = RRP.class.getClassLoader().getResource("test_data_2.csv");
+	private static URL resource = RRP.class.getClassLoader().getResource("test_data_3.csv");
 	private double timeQuantum = 2.5;
 
 	public static void main(String[] args) {
@@ -56,7 +56,7 @@ public class RRP {
 		while (!queue.isEmpty()) {
 			ProcessBean process = queue.poll();
 			double remainingBurstTime = process.getRemainingBurstTime();
-			double slice = Math.min(timeQuantum, remainingBurstTime);
+			double slice = (!queue.isEmpty()) ? Math.min(timeQuantum, remainingBurstTime) : remainingBurstTime;
 			processSplits.add(
 					new ProcessSplit(
 							process.getId(),
@@ -66,7 +66,7 @@ public class RRP {
 			currentTime += slice;
 			process.setRemainingBurstTime(remainingBurstTime - slice);
 
-			if (process.getRemainingBurstTime() > 0) {
+			if (process.getRemainingBurstTime() > 0 && !queue.isEmpty()) {
 				queue.offer(process);
 			}
 		}
