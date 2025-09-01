@@ -11,12 +11,11 @@ import de.vandermeer.asciitable.AsciiTable;
 
 public class RRP {
 	private static URL resource = RRP.class.getClassLoader().getResource("test_data_3.csv");
-	private double timeQuantum = 2.5;
+	private double timeQuantum = 2;
 
 	public static void main(String[] args) {
 		AsciiTable at = new AsciiTable();
 		List<String[]> csvContent = CsvReader.readCsv(resource.getPath());
-		// at.getContext().setGrid(A7_Grids.minusBarPlusEquals());
 		for (String[] line : csvContent) {
 			at.addRule();
 			at.addRow(line);
@@ -27,17 +26,39 @@ public class RRP {
 		Map<Integer, List<ProcessBean>> processList = RRP.getProcessByPriority();
 		RRP test = new RRP();
 		List<ProcessSplit> list = test.roundRobinWithPriority(processList);
-		for (ProcessSplit proc : list) {
-			System.out.println("Process: " + proc.getProcessId());
-			System.out.println("Start: " + proc.getStartTime());
-			System.out.print("End: " + proc.getEndTime());
-			System.out.println();
-		}
 		test.generateGantt(list);
+		System.out.println(test.calculateAverageWaitingTime(list));
+		System.out.println(test.calculateAverageTurnAroundTime(list));
 	}
 
 	public void generateGantt(List<ProcessSplit> list) {
 		GanttGenerator.renderGantt(list, timeQuantum);
+	}
+
+	public double calculateAverageWaitingTime(List<ProcessSplit> processList) {
+		HashMap<Integer, ProcessSplit> lastSplits = getLastProcesses(processList);
+		double totalWaitingTime = 0;
+		for (ProcessSplit v : lastSplits.values()) {
+			totalWaitingTime += v.getStartTime();
+		}
+		return totalWaitingTime / lastSplits.size();
+	}
+
+	public double calculateAverageTurnAroundTime(List<ProcessSplit> processList) {
+		HashMap<Integer, ProcessSplit> lastSplits = getLastProcesses(processList);
+		double totalTurnAroundTime = 0;
+		for (ProcessSplit v : lastSplits.values()) {
+			totalTurnAroundTime += v.getEndTime();
+		}
+		return totalTurnAroundTime / lastSplits.size();
+	}
+
+	public HashMap<Integer, ProcessSplit> getLastProcesses(List<ProcessSplit> processList) {
+		HashMap<Integer, ProcessSplit> lastSplits = new HashMap<>();
+		for (ProcessSplit process : processList) {
+			lastSplits.put(process.getProcessId(), process);
+		}
+		return lastSplits;
 	}
 
 	public List<ProcessSplit> roundRobinWithPriority(Map<Integer, List<ProcessBean>> processList) {
