@@ -7,15 +7,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Scanner;
+
+import org.example.CliHandler.ProcessInputResult;
+
 import de.vandermeer.asciitable.AsciiTable;
 
 public class RRP {
-	private static URL resource = RRP.class.getClassLoader().getResource("test_data_3.csv");
-	private double timeQuantum = 2;
-
 	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		CliHandler cli = new CliHandler(scanner);
+		ProcessInputResult input = cli.chooseInputMethod();
+		generateOutput(input.getBeans(), input.getTimeQuantum(), input.getCsvContents());
+		scanner.close();
+	}
+
+	public static void generateOutput(List<ProcessBean> list, double timeQuantum, List<String[]> csvContent) {
 		AsciiTable at = new AsciiTable();
-		List<String[]> csvContent = CsvReader.readCsv(resource.getPath());
 		for (String[] line : csvContent) {
 			at.addRule();
 			at.addRow(line);
@@ -23,19 +31,14 @@ public class RRP {
 		at.addRule();
 		String rend = at.render();
 		System.out.println(rend);
-		Map<Integer, List<ProcessBean>> processList = RRP.getProcessByPriority();
-		RRP test = new RRP();
-		List<ProcessSplit> list = test.roundRobinWithPriority(processList);
-		test.generateGantt(list);
-		System.out.println(test.calculateAverageWaitingTime(list));
-		System.out.println(test.calculateAverageTurnAroundTime(list));
+		Map<Integer, List<ProcessBean>> processList = getProcessByPriority(list);
+		List<ProcessSplit> rrp = roundRobinWithPriority(processList, timeQuantum);
+		GanttGenerator.renderGantt(rrp, timeQuantum);
+		System.out.println("Average Waiting Time: " + calculateAverageWaitingTime(rrp) + " ms");
+		System.out.println("Average Turn Around Time: " + calculateAverageTurnAroundTime(rrp) + " ms");
 	}
 
-	public void generateGantt(List<ProcessSplit> list) {
-		GanttGenerator.renderGantt(list, timeQuantum);
-	}
-
-	public double calculateAverageWaitingTime(List<ProcessSplit> processList) {
+	public static double calculateAverageWaitingTime(List<ProcessSplit> processList) {
 		HashMap<Integer, ProcessSplit> lastSplits = getLastProcesses(processList);
 		double totalWaitingTime = 0;
 		for (ProcessSplit v : lastSplits.values()) {
@@ -44,7 +47,7 @@ public class RRP {
 		return totalWaitingTime / lastSplits.size();
 	}
 
-	public double calculateAverageTurnAroundTime(List<ProcessSplit> processList) {
+	public static double calculateAverageTurnAroundTime(List<ProcessSplit> processList) {
 		HashMap<Integer, ProcessSplit> lastSplits = getLastProcesses(processList);
 		double totalTurnAroundTime = 0;
 		for (ProcessSplit v : lastSplits.values()) {
@@ -53,7 +56,7 @@ public class RRP {
 		return totalTurnAroundTime / lastSplits.size();
 	}
 
-	public HashMap<Integer, ProcessSplit> getLastProcesses(List<ProcessSplit> processList) {
+	public static HashMap<Integer, ProcessSplit> getLastProcesses(List<ProcessSplit> processList) {
 		HashMap<Integer, ProcessSplit> lastSplits = new HashMap<>();
 		for (ProcessSplit process : processList) {
 			lastSplits.put(process.getProcessId(), process);
@@ -61,7 +64,8 @@ public class RRP {
 		return lastSplits;
 	}
 
-	public List<ProcessSplit> roundRobinWithPriority(Map<Integer, List<ProcessBean>> processList) {
+	public static List<ProcessSplit> roundRobinWithPriority(Map<Integer, List<ProcessBean>> processList,
+			double timeQuantum) {
 		List<ProcessSplit> processSplits = new ArrayList<>();
 		processList.forEach((k, v) -> {
 			processSplits.addAll(roundRobin(v, timeQuantum,
@@ -70,7 +74,7 @@ public class RRP {
 		return processSplits;
 	}
 
-	public List<ProcessSplit> roundRobin(List<ProcessBean> processList, double timeQuantum, double prevTime) {
+	public static List<ProcessSplit> roundRobin(List<ProcessBean> processList, double timeQuantum, double prevTime) {
 		Queue<ProcessBean> queue = new LinkedList<ProcessBean>(processList);
 		List<ProcessSplit> processSplits = new ArrayList<>();
 		double currentTime = prevTime;
@@ -94,10 +98,9 @@ public class RRP {
 		return processSplits;
 	}
 
-	public static Map<Integer, List<ProcessBean>> getProcessByPriority() {
+	public static Map<Integer, List<ProcessBean>> getProcessByPriority(List<ProcessBean> processBeans) {
 		Map<Integer, List<ProcessBean>> processList = new HashMap<>();
-		List<ProcessBean> csv = CsvReader.getProcessBeans(resource.getPath());
-		for (ProcessBean process : csv) {
+		for (ProcessBean process : processBeans) {
 			int priority = process.getPriority();
 
 			processList.computeIfAbsent(priority, k -> new ArrayList<>());
